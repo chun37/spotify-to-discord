@@ -121,7 +121,7 @@ if __name__ == "__main__":
     s = SpotifyToDiscord(
         os.environ["SPOTIFY_CLIENT_ID"],
         os.environ["SPOTIFY_CLIENT_SECRET"],
-        os.environ["DISCORD_WEBHOOK_ID"],
+        os.environ["DISCORD_WEBHOOK_URL"],
         args.playlist_id,
     )
     s.start()
