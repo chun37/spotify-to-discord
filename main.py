@@ -2,6 +2,7 @@ import logging
 import os
 import time
 from argparse import ArgumentParser
+from dataclasses import asdict
 from enum import Enum
 
 from discord_webhook import DiscordEmbed, DiscordWebhook
@@ -97,14 +98,14 @@ class SpotifyToDiscord:
             for track_id, user_id in added_tracks:
                 track = self.spotify_api.get_track(track_id)
                 user = self.spotify_api.get_user(user_id)
-                logger.info('added "%s" from %s', track.name, user.display_name)
+                logger.info('added "%s" from %s', asdict(track), asdict(user))
                 self._send_webhook(track, user, NotifyType.ADD)
 
             deleted_tracks = before_tracks - after_tracks
             for track_id, user_id in deleted_tracks:
                 track = self.spotify_api.get_track(track_id)
                 user = self.spotify_api.get_user(user_id)
-                logger.info('deleted "%s" from %s', track.name, user.display_name)
+                logger.info('deleted "%s" from %s', asdict(track), asdict(user))
                 self._send_webhook(track, user, NotifyType.REMOVE)
 
             before_tracks = after_tracks
