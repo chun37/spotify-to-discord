@@ -52,7 +52,13 @@ class SpotifyToDiscord:
         track_hyperlink = f"[{track.name}]({track_link})"
 
         playlist_link = f"https://open.spotify.com/playlist/{self.playlist_id}"
-        description = f"__{track_hyperlink}__ - {artist_names}\n{notify_type.value.split()[0]} by {user_hyperlink}\n{playlist_link}"
+        add_text = (
+            f"added by {user_hyperlink}\n" if notify_type == NotifyType.ADD else ""
+        )
+
+        description = (
+            f"__{track_hyperlink}__ - {artist_names}\n{add_text}{playlist_link}"
+        )
 
         embed.set_description(description)
         if track.album.images:
