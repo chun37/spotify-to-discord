@@ -1,6 +1,6 @@
 # Spotify-to-Discord
 
-<img width="591" alt="Screen Shot 2021-03-05 at 3 49 42" src="https://user-images.githubusercontent.com/24963003/110014308-fc1f2300-7d65-11eb-9f61-728e2ab01c1a.png">
+<img width="508" alt="Screen Shot 2021-03-06 at 13 20 43" src="https://user-images.githubusercontent.com/24963003/110194980-ecdfc880-7e7e-11eb-9188-14ee5adb53e2.png">
 
 ## Usage
 
