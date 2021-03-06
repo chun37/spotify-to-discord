@@ -79,36 +79,37 @@ class SpotifyToDiscord:
         )
 
     def start(self) -> None:
-        before_tracks = None
-        loop_count = 0
-        while True:
-            # 1時間しかトークンが持たない><
-            # 30分に1回くらい更新しとけばえかろ
-            if loop_count % (self.interval // 2) == 0:
-                self.spotify_api.update_token()
+        self.spotify_api.update_token()
+        before_tracks = set(self._get_tracks_data())
+        loop_count = 1
+        time.sleep(self.interval)
+        self.loop(before_tracks, loop_count)
 
-            if before_tracks is None:
-                before_tracks = set(self._get_tracks_data())
-                time.sleep(self.interval)
+    def loop(self, before_tracks: set[tuple[str, str]], loop_count: int) -> None:
+        # 1時間しかトークンが持たない><
+        # 30分に1回くらい更新しとけばえかろ
+        if loop_count % (self.interval // 2) == 0:
+            self.spotify_api.update_token()
 
-            after_tracks = set(self._get_tracks_data())
+        after_tracks = set(self._get_tracks_data())
 
-            added_tracks = after_tracks - before_tracks
-            for track_id, user_id in added_tracks:
-                track = self.spotify_api.get_track(track_id)
-                user = self.spotify_api.get_user(user_id)
-                logger.info('added "%s" from %s', asdict(track), asdict(user))
-                self._send_webhook(track, user, NotifyType.ADD)
+        added_tracks = after_tracks - before_tracks
+        for track_id, user_id in added_tracks:
+            track = self.spotify_api.get_track(track_id)
+            user = self.spotify_api.get_user(user_id)
+            logger.info('added "%s" from %s', asdict(track), asdict(user))
+            self._send_webhook(track, user, NotifyType.ADD)
 
-            deleted_tracks = before_tracks - after_tracks
-            for track_id, user_id in deleted_tracks:
-                track = self.spotify_api.get_track(track_id)
-                user = self.spotify_api.get_user(user_id)
-                logger.info('deleted "%s" from %s', asdict(track), asdict(user))
-                self._send_webhook(track, user, NotifyType.REMOVE)
+        deleted_tracks = before_tracks - after_tracks
+        for track_id, user_id in deleted_tracks:
+            track = self.spotify_api.get_track(track_id)
+            user = self.spotify_api.get_user(user_id)
+            logger.info('deleted "%s" from %s', asdict(track), asdict(user))
+            self._send_webhook(track, user, NotifyType.REMOVE)
 
-            before_tracks = after_tracks
-            time.sleep(self.interval)
+        time.sleep(self.interval)
+
+        return self.loop(after_tracks, loop_count + 1)
 
 
 if __name__ == "__main__":
