@@ -64,12 +64,39 @@ class Followers:
 
 
 @dataclass(frozen=True)
-class User:
+class AbstractUser:
     display_name: str
+    external_urls: dict[str, str]
+    href: str
+    id: str
+    type: str
+    uri: str
+
+
+@dataclass(frozen=True)
+class User(AbstractUser):
+    followers: Followers
+    images: list[Image]
+
+
+@dataclass(frozen=True)
+class Owner(AbstractUser):
+    pass
+
+
+@dataclass(frozen=True)
+class Playlist:
+    collaborative: bool
+    description: str
     external_urls: dict[str, str]
     followers: Followers
     href: str
     id: str
     images: list[Image]
+    name: str
+    owner: Owner
+    primary_color: Optional[str]
+    public: bool
+    snapshot_id: str
     type: str
     uri: str

@@ -5,7 +5,7 @@ from urllib.parse import urlencode, urlunparse
 import requests
 import typedjson
 
-from .models import Track, User
+from .models import Track, User, Playlist
 
 
 class Spotify:
@@ -118,3 +118,9 @@ class Spotify:
         url = self._make_url(endpoint)
         response_json = self._get(self.session, url)
         return typedjson.decode(Track, response_json)
+
+    def get_playlist(self, playlist_id: str) -> Playlist:
+        endpoint = f"/{self.api_version}/playlists/{playlist_id}"
+        url = self._make_url(endpoint)
+        response_json = self._get(self.session, url)
+        return typedjson.decode(Playlist, response_json)

@@ -38,13 +38,6 @@ class SpotifyToDiscord:
         self.playlist_id = playlist_id
         self.interval = interval
 
-    def _get_webhook(self, user: User) -> DiscordWebhook:
-        avatar_url = user.images[0].url if user.images else None
-        webhook = DiscordWebhook(
-            url=self.webhook_url, username=user.display_name, avatar_url=avatar_url
-        )
-        return webhook
-
     def _create_embed(
         self, track: Track, user: User, notify_type: NotifyType
     ) -> DiscordEmbed:
@@ -59,7 +52,13 @@ class SpotifyToDiscord:
         track_hyperlink = f"[{track.name}]({track_link})"
 
         playlist_link = f"https://open.spotify.com/playlist/{self.playlist_id}"
-        description = f"__{track_hyperlink}__ - {artist_names}\n{notify_type.value.split()[0]} by {user_hyperlink}\n{playlist_link}"
+        add_text = (
+            f"added by {user_hyperlink}\n" if notify_type == NotifyType.ADD else ""
+        )
+
+        description = (
+            f"__{track_hyperlink}__ - {artist_names}\n{add_text}{playlist_link}"
+        )
 
         embed.set_description(description)
         if track.album.images:
@@ -68,7 +67,7 @@ class SpotifyToDiscord:
         return embed
 
     def _send_webhook(self, track: Track, user: User, notify_type: NotifyType) -> None:
-        webhook = self._get_webhook(user)
+        webhook = DiscordWebhook(url=self.webhook_url)
         embed = self._create_embed(track, user, notify_type)
         webhook.add_embed(embed)
         webhook.execute()
